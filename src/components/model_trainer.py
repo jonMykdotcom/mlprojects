@@ -52,7 +52,36 @@ class ModelTrainer:
                 "CatBoost": CatBoostRegressor(),
             }
 
-            model_report:dict=evaluate_models(X_train=X_train,y_train=y_train,X_test=X_test,y_test=y_test,models=models)
+            #hyperparameter tuning
+            params = {
+                "DecisionTree": {'criterion': ['squared_error', 'friedman_mae','absolute_error','poisson'],
+                                 'max_depth': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, None],
+                                },
+
+                "RandomForest": {'n_estimators': [8,16,32,64,128,256],
+                                },
+
+                "GradientBoosting": {'n_estimators': [8,16,32,64,128,256],
+                                     'learning_rate': [0.1, 0.01, 0.05, 0.001],
+                                     'subsample': [0.6, 0.7, 0.75,0.8,0.85,0.9],
+                                    },
+
+                "LinearRegression": {},
+                "KNeighbors": {'n_neighbors': [5, 7, 9,11],
+                              },
+                "XGBoost": {'n_estimators': [8,16,32,64,128,256],
+                            'learning_rate': [0.1, 0.01, 0.05, 0.001],
+                            },
+                "CatBoost": {'depth': [6, 8, 10],
+                             'learning_rate': [0.1, 0.01, 0.5, 0.001],
+                             'iterations': [30, 50, 100]
+                            },
+                "AdaBoost": {'n_estimators': [8,16,32,64,128,256],
+                            'learning_rate': [0.1, 0.01, 0.5, 0.001],
+                            }
+            }
+
+            model_report:dict=evaluate_models(X_train=X_train,y_train=y_train,X_test=X_test,y_test=y_test,models=models,param=params)
 
             #Model with the highest r2 score
             best_model_score = max(sorted(model_report.values()))
